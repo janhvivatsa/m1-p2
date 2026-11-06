@@ -3,6 +3,9 @@
 
 A productivity web application that converts meeting transcripts into structured summaries, decisions, action items, and clarification questions. Designed to simplify meeting management and improve task accountability.
 
+## Application Screenshot
+![Dashboard](images/dashboard.png)
+
 ## Features
 
 - **Meeting Summarization:** Extracts objectives, discussion points, and key decisions.
