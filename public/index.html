@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetingFlow AI | AI-Powered Meeting-to-Action Assistant</title>
+  
+  <!-- Modern Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- html2pdf for instant high-quality PDF downloads -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- ========================================================================= -->
+    <!-- SIDEBAR NAVIGATION -->
+    <!-- ========================================================================= -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">MeetingFlow<span class="brand-badge">AI</span></span>
+          <span class="brand-subtitle">Meeting-to-Action Engine</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="9"/>
+              <rect x="14" y="3" width="7" height="5"/>
+              <rect x="14" y="12" width="7" height="9"/>
+              <rect x="3" y="16" width="7" height="5"/>
+            </svg>
+          </span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-view="new-meeting" id="nav-new-meeting">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          </span>
+          <span class="nav-label">New Meeting</span>
+          <span class="nav-pill-new">AI</span>
+        </button>
+
+        <button class="nav-item" data-view="history" id="nav-history">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </span>
+          <span class="nav-label">Meeting History</span>
+          <span class="nav-badge" id="badge-meetings-count">0</span>
+        </button>
+
+        <button class="nav-item" data-view="actions" id="nav-actions">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+          </span>
+          <span class="nav-label">Action Items</span>
+          <span class="nav-badge" id="badge-actions-count">0</span>
+        </button>
+
+        <button class="nav-item" data-view="clarifications" id="nav-clarifications">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </span>
+          <span class="nav-label">Clarifications</span>
+          <span class="nav-badge badge-warning" id="badge-clarifications-count">0</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer / System Status -->
+      <div class="sidebar-footer">
+        <div class="ai-status-card" id="ai-status-indicator">
+          <div class="status-indicator-dot online"></div>
+          <div class="status-details">
+            <span class="status-name" id="ai-model-label">Gemini AI</span>
+            <span class="status-subtext" id="ai-connection-label">Connecting...</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- MAIN CONTENT WRAPPER -->
+    <!-- ========================================================================= -->
+    <main class="main-content">
+      <!-- Top App Bar -->
+      <header class="top-bar">
+        <div class="header-left">
+          <h1 class="page-title" id="page-heading">Dashboard</h1>
+          <p class="page-subheading" id="page-subheading">Real-time overview of meetings, action items, and ambiguities</p>
+        </div>
+        <div class="header-right">
+          <div class="current-date-chip">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span id="current-date-display">Today</span>
+          </div>
+          <button class="btn btn-primary" id="btn-quick-new-meeting">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New Meeting
+          </button>
+        </div>
+      </header>
+
+      <div class="content-body">
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 1: DASHBOARD -->
+        <!-- ===================================================================== -->
+        <section class="view-section active" id="view-dashboard">
+          
+          <!-- Statistics Cards Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Total Meetings</span>
+                <div class="stat-icon-wrapper icon-purple">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="stat-value" id="stat-total-meetings">0</div>
+              <div class="stat-footer text-muted">Processed transcripts</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Total Action Items</span>
+                <div class="stat-icon-wrapper icon-blue">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 11 12 14 22 4"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="stat-value" id="stat-total-actions">0</div>
+              <div class="stat-footer text-muted">Extracted across meetings</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Completed Tasks</span>
+                <div class="stat-icon-wrapper icon-green">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="stat-value text-green" id="stat-completed-actions">0</div>
+              <div class="stat-footer text-muted" id="stat-completion-rate">0% completed</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Pending Tasks</span>
+                <div class="stat-icon-wrapper icon-amber">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="stat-value text-amber" id="stat-pending-actions">0</div>
+              <div class="stat-footer text-muted">Awaiting completion</div>
+            </div>
+
+            <div class="stat-card clickable" id="card-unresolved-clarifications">
+              <div class="stat-header">
+                <span class="stat-title">Unresolved Ambiguities</span>
+                <div class="stat-icon-wrapper icon-rose">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="stat-value text-rose" id="stat-unresolved-clarifications">0</div>
+              <div class="stat-footer text-rose">Click to review &amp; resolve &rarr;</div>
+            </div>
+          </div>
+
+          <!-- Middle Section: Progress and Upcoming Deadlines -->
+          <div class="dashboard-grid-two">
+            <!-- Task Completion Card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Task Completion Progress</h3>
+                  <p class="card-subtitle">Real-time status breakdown of all commitments</p>
+                </div>
+                <span class="badge badge-info" id="progress-percent-badge">0% Done</span>
+              </div>
+              <div class="card-body">
+                <div class="progress-bar-container">
+                  <div class="progress-bar-track">
+                    <div class="progress-bar-fill progress-green" id="progress-bar-completed" style="width: 0%;"></div>
+                    <div class="progress-bar-fill progress-blue" id="progress-bar-inprogress" style="width: 0%;"></div>
+                    <div class="progress-bar-fill progress-amber" id="progress-bar-pending" style="width: 0%;"></div>
+                  </div>
+                </div>
+
+                <div class="progress-legend">
+                  <div class="legend-item">
+                    <span class="legend-dot dot-green"></span>
+                    <span class="legend-label">Completed:</span>
+                    <strong id="legend-completed-val">0</strong>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot dot-blue"></span>
+                    <span class="legend-label">In Progress:</span>
+                    <strong id="legend-inprogress-val">0</strong>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot dot-amber"></span>
+                    <span class="legend-label">Pending:</span>
+                    <strong id="legend-pending-val">0</strong>
+                  </div>
+                </div>
+
+                <!-- Fast CTA Banner -->
+                <div class="dashboard-cta-banner">
+                  <div class="cta-text">
+                    <h4>Analyze a Meeting Transcript</h4>
+                    <p>Extract decisions, action items, and detect missing owners in seconds.</p>
+                  </div>
+                  <button class="btn btn-primary" id="btn-dashboard-analyze-cta">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    Start AI Analysis
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upcoming Deadlines & Overdue Tasks -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Upcoming &amp; Urgent Deadlines</h3>
+                  <p class="card-subtitle">Tasks requiring immediate attention</p>
+                </div>
+                <button class="btn btn-sm btn-outline" id="btn-goto-all-actions">View All</button>
+              </div>
+              <div class="card-body">
+                <div class="deadlines-list" id="dashboard-deadlines-container">
+                  <!-- Populated dynamically -->
+                  <div class="empty-state-sm">
+                    <p>No pending deadlines recorded yet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Section: Recent Meetings -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Recent Meetings</h3>
+                <p class="card-subtitle">Recently processed transcripts and action plans</p>
+              </div>
+              <button class="btn btn-sm btn-outline" id="btn-goto-all-history">View All History</button>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Meeting Title</th>
+                      <th>Date</th>
+                      <th>Action Items</th>
+                      <th>Decisions</th>
+                      <th>Clarifications</th>
+                      <th class="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-recent-meetings-tbody">
+                    <!-- Populated dynamically -->
+                    <tr>
+                      <td colspan="6" class="text-center py-4 text-muted">
+                        No meetings saved yet. Click <strong>"New Meeting"</strong> to analyze your first transcript!
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 2: NEW MEETING -->
+        <!-- ===================================================================== -->
+        <section class="view-section" id="view-new-meeting">
+          
+          <div class="new-meeting-header-card">
+            <div>
+              <h2 class="section-title">New Meeting Analysis</h2>
+              <p class="section-desc">Paste your discussion transcript or upload a document to extract actionable intelligence.</p>
+            </div>
+            <div class="quick-helpers">
+              <button class="btn btn-magic" id="btn-load-sample">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Load Sample Meeting
+              </button>
+              <button class="btn btn-ghost" id="btn-clear-form">Clear Form</button>
+            </div>
+          </div>
+
+          <form id="meeting-form" class="meeting-form-card">
+            <!-- Row 1: Title & Date -->
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label for="input-meeting-title" class="form-label">
+                  Meeting Title <span class="required">*</span>
+                </label>
+                <input type="text" id="input-meeting-title" class="form-control" placeholder="e.g., Q3 Product Roadmap &amp; Sprint Planning" required>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="input-meeting-date" class="form-label">
+                  Meeting Date <span class="required">*</span>
+                </label>
+                <input type="date" id="input-meeting-date" class="form-control" required>
+              </div>
+            </div>
+
+            <!-- Row 2: Participants -->
+            <div class="form-group">
+              <label for="input-meeting-participants" class="form-label">
+                Participants <span class="text-muted">(comma-separated)</span>
+              </label>
+              <input type="text" id="input-meeting-participants" class="form-control" placeholder="e.g., Sarah Chen (Product Lead), Alex Rodriguez (Engineering Lead), Priya Patel (UX Designer)">
+            </div>
+
+            <!-- Row 3: File Upload Dropzone -->
+            <div class="file-upload-section">
+              <div class="upload-dropzone" id="upload-dropzone">
+                <input type="file" id="file-input" accept=".txt,.pdf,.docx" class="file-input-hidden">
+                <div class="dropzone-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <div class="dropzone-text">
+                  <span class="dropzone-title">Upload meeting document</span>
+                  <span class="dropzone-sub">Drag &amp; drop or <button type="button" class="btn-link" id="btn-browse-file">browse files</button> (.txt, .pdf, .docx)</span>
+                </div>
+                <div class="dropzone-loader hidden" id="upload-spinner">
+                  <div class="spinner"></div>
+                  <span>Extracting text from file...</span>
+                </div>
+              </div>
+              <div class="file-info-badge hidden" id="file-info-badge">
+                <span id="file-info-name">document.pdf</span>
+                <span class="badge badge-info" id="file-info-words">0 words</span>
+                <button type="button" class="btn-icon-xs" id="btn-remove-file" title="Remove file">&times;</button>
+              </div>
+            </div>
+
+            <!-- Row 4: Transcript Textarea -->
+            <div class="form-group">
+              <div class="form-label-row">
+                <label for="input-meeting-transcript" class="form-label">
+                  Meeting Transcript <span class="required">*</span>
+                </label>
+                <span class="text-muted text-xs" id="transcript-counter">0 words | 0 characters</span>
+              </div>
+              <textarea id="input-meeting-transcript" class="form-control transcript-textarea" rows="12" placeholder="Paste full transcript conversation here, or click 'Load Sample Meeting' above to test the ambiguity detection engine..." required></textarea>
+            </div>
+
+            <!-- Submit Button Bar -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-analyze btn-xl" id="btn-analyze-submit">
+                <span class="analyze-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </span>
+                <span class="analyze-btn-text">ANALYZE MEETING WITH AI</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Loading & Analysis Animation Overlay -->
+          <div class="analysis-loading-card hidden" id="analysis-loading-state">
+            <div class="pulse-sparkle">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+            </div>
+            <h3 class="loading-title">Gemini AI is analyzing meeting transcript...</h3>
+            <p class="loading-subtitle">Extracting decisions, mapping deliverables, and identifying missing owners or deadlines.</p>
+            
+            <div class="loading-steps-container">
+              <div class="step-item active" id="step-1">
+                <div class="step-dot"></div>
+                <div class="step-text">Parsing and validating transcript context</div>
+              </div>
+              <div class="step-item" id="step-2">
+                <div class="step-dot"></div>
+                <div class="step-text">Extracting executive summary &amp; discussion points</div>
+              </div>
+              <div class="step-item" id="step-3">
+                <div class="step-dot"></div>
+                <div class="step-text">Structuring formal decisions &amp; responsible leads</div>
+              </div>
+              <div class="step-item" id="step-4">
+                <div class="step-dot"></div>
+                <div class="step-text">Running Ambiguity Detection for missing assignees &amp; deadlines</div>
+              </div>
+              <div class="step-item" id="step-5">
+                <div class="step-dot"></div>
+                <div class="step-text">Finalizing structured JSON action report</div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 3: MEETING REPORT (After AI Analysis or from History) -->
+        <!-- ===================================================================== -->
+        <section class="view-section" id="view-meeting-report">
+          
+          <!-- Report Action Bar -->
+          <div class="report-action-bar">
+            <button class="btn btn-ghost" id="btn-report-back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+              </svg>
+              Back
+            </button>
+
+            <div class="report-btn-group">
+              <button class="btn btn-outline" id="btn-report-export-csv">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Export CSV
+              </button>
+
+              <button class="btn btn-outline" id="btn-report-download-pdf">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="12" y1="18" x2="12" y2="12"/>
+                  <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                Download PDF
+              </button>
+
+              <button class="btn btn-outline" id="btn-report-toggle-edit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Edit Report
+              </button>
+
+              <button class="btn btn-primary" id="btn-report-save">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Save Meeting
+              </button>
+            </div>
+          </div>
+
+          <!-- Printable / Exportable Document Content -->
+          <div class="report-document" id="printable-report-area">
+            
+            <!-- Report Meta Header -->
+            <div class="report-header-banner">
+              <div class="report-header-top">
+                <span class="badge badge-purple" id="report-badge-source">AI Generated Intelligence</span>
+                <span class="report-date" id="report-display-date">November 6, 2026</span>
+              </div>
+              <h2 class="report-main-title" id="report-display-title">Meeting Title</h2>
+              
+              <div class="report-participants-row">
+                <span class="label">Participants:</span>
+                <div class="participants-tags" id="report-display-participants">
+                  <!-- Tag pills rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 1: Executive Summary & Objectives -->
+            <div class="report-card">
+              <div class="report-card-header">
+                <div class="report-icon-title">
+                  <div class="icon-circle icon-purple">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                  </div>
+                  <h3>Executive Summary</h3>
+                </div>
+              </div>
+              <div class="report-card-body">
+                <p class="executive-summary-text" id="report-executive-summary" contenteditable="false">
+                  Summary text will appear here...
+                </p>
+
+                <div class="mt-4">
+                  <h4 class="subheading-sm">Meeting Objectives</h4>
+                  <ul class="styled-bullet-list" id="report-objectives-list">
+                    <!-- Dynamic -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Key Discussion Points -->
+            <div class="report-card">
+              <div class="report-card-header">
+                <div class="report-icon-title">
+                  <div class="icon-circle icon-blue">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </div>
+                  <h3>Key Discussion Points</h3>
+                </div>
+              </div>
+              <div class="report-card-body">
+                <div class="discussion-points-grid" id="report-discussion-points-container">
+                  <!-- Dynamic -->
+                </div>
+
+                <div class="mt-4" id="report-outcomes-container">
+                  <h4 class="subheading-sm">Important Outcomes</h4>
+                  <ul class="styled-bullet-list" id="report-outcomes-list">
+                    <!-- Dynamic -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Decisions Made -->
+            <div class="report-card">
+              <div class="report-card-header">
+                <div class="report-icon-title">
+                  <div class="icon-circle icon-green">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <h3>Key Decisions Made</h3>
+                </div>
+              </div>
+              <div class="report-card-body">
+                <div class="decisions-list" id="report-decisions-container">
+                  <!-- Dynamic -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: Action Items Table -->
+            <div class="report-card">
+              <div class="report-card-header">
+                <div class="report-icon-title">
+                  <div class="icon-circle icon-indigo">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 11 12 14 22 4"/>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                  </div>
+                  <h3>Action Items</h3>
+                </div>
+              </div>
+              <div class="report-card-body p-0">
+                <div class="table-responsive">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Task Details</th>
+                        <th>Assigned To</th>
+                        <th>Deadline</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="report-action-items-tbody">
+                      <!-- Dynamic -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 5: Ambiguities & Clarifications -->
+            <div class="report-card report-card-ambiguities" id="report-ambiguities-section">
+              <div class="report-card-header">
+                <div class="report-icon-title">
+                  <div class="icon-circle icon-rose">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="8" x2="12" y2="12"/>
+                      <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                  </div>
+                  <h3>Ambiguity Detection &amp; Required Clarifications</h3>
+                </div>
+                <span class="badge badge-rose" id="report-ambiguities-badge">0 Issues Detected</span>
+              </div>
+              <div class="report-card-body">
+                <p class="text-sm text-muted mb-3">
+                  The AI detected statements where owners, target deadlines, or deliverables were unspecified. Resolve them to complete your project plan:
+                </p>
+                <div class="ambiguities-cards-list" id="report-ambiguities-container">
+                  <!-- Dynamic -->
+                </div>
+              </div>
+            </div>
+
+          </div> <!-- End printable area -->
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 4: ACTION ITEMS (Global Tracker) -->
+        <!-- ===================================================================== -->
+        <section class="view-section" id="view-actions">
+          
+          <div class="section-top-bar">
+            <div>
+              <h2 class="section-title">Action Items</h2>
+              <p class="section-desc">Manage, track, and update all deliverables extracted across your meetings.</p>
+            </div>
+            <div class="section-actions">
+              <button class="btn btn-outline" id="btn-export-all-tasks-csv">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Export CSV
+              </button>
+              <button class="btn btn-primary" id="btn-add-custom-task">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Task
+              </button>
+            </div>
+          </div>
+
+          <!-- Filters Row -->
+          <div class="filters-card">
+            <div class="filter-item flex-2">
+              <div class="search-input-wrapper">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="filter-action-search" class="form-control" placeholder="Search tasks by title or assignee...">
+              </div>
+            </div>
+
+            <div class="filter-item">
+              <select id="filter-action-status" class="form-control">
+                <option value="ALL">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <select id="filter-action-priority" class="form-control">
+                <option value="ALL">All Priorities</option>
+                <option value="High">High Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="Low">Low Priority</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <select id="filter-action-meeting" class="form-control">
+                <option value="ALL">All Meetings</option>
+                <!-- Populated dynamically with saved meeting titles -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Tasks Table Card -->
+          <div class="card p-0">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Task &amp; Description</th>
+                    <th>Meeting Source</th>
+                    <th>Assigned To</th>
+                    <th>Deadline</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="global-action-items-tbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 5: CLARIFICATIONS (Ambiguity Center) -->
+        <!-- ===================================================================== -->
+        <section class="view-section" id="view-clarifications">
+          
+          <div class="section-top-bar">
+            <div>
+              <h2 class="section-title">Clarifications &amp; Ambiguities</h2>
+              <p class="section-desc">Resolve incomplete action items identified by Gemini AI (missing assignees or deadlines).</p>
+            </div>
+            
+            <div class="clarification-tabs">
+              <button class="tab-btn active" data-clarification-tab="unresolved" id="tab-clarification-unresolved">
+                Unresolved (<span id="unresolved-tab-count">0</span>)
+              </button>
+              <button class="tab-btn" data-clarification-tab="resolved" id="tab-clarification-resolved">
+                Resolved (<span id="resolved-tab-count">0</span>)
+              </button>
+              <button class="tab-btn" data-clarification-tab="all" id="tab-clarification-all">
+                All (<span id="all-clarification-tab-count">0</span>)
+              </button>
+            </div>
+          </div>
+
+          <!-- Clarifications List -->
+          <div class="clarifications-grid" id="clarifications-list-container">
+            <!-- Dynamic Cards -->
+          </div>
+
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 6: MEETING HISTORY -->
+        <!-- ===================================================================== -->
+        <section class="view-section" id="view-history">
+          
+          <div class="section-top-bar">
+            <div>
+              <h2 class="section-title">Meeting History</h2>
+              <p class="section-desc">Search and manage previously analyzed meeting transcripts stored locally.</p>
+            </div>
+            <div class="history-search-wrapper">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" id="filter-history-search" class="form-control" placeholder="Search by title or participant...">
+            </div>
+          </div>
+
+          <!-- History Cards Grid -->
+          <div class="history-grid" id="history-cards-container">
+            <!-- Populated dynamically -->
+          </div>
+
+        </section>
+
+      </div> <!-- End content-body -->
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: EDIT TASK / ACTION ITEM -->
+  <!-- ========================================================================= -->
+  <div class="modal-backdrop hidden" id="modal-edit-task">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-task-title">Edit Action Item</h3>
+        <button class="btn-close" id="btn-close-task-modal">&times;</button>
+      </div>
+      <form id="form-edit-task" class="modal-body">
+        <input type="hidden" id="edit-task-id">
+        <input type="hidden" id="edit-task-meeting-id">
+
+        <div class="form-group">
+          <label for="edit-task-title-input" class="form-label">Task Title <span class="required">*</span></label>
+          <input type="text" id="edit-task-title-input" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-task-desc-input" class="form-label">Description</label>
+          <textarea id="edit-task-desc-input" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="edit-task-assignee-input" class="form-label">Assigned Person</label>
+            <input type="text" id="edit-task-assignee-input" class="form-control" placeholder="e.g. Alex Rodriguez">
+          </div>
+
+          <div class="form-group flex-1">
+            <label for="edit-task-deadline-input" class="form-label">Deadline</label>
+            <input type="date" id="edit-task-deadline-input" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="edit-task-priority-select" class="form-label">Priority</label>
+            <select id="edit-task-priority-select" class="form-control">
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+
+          <div class="form-group flex-1">
+            <label for="edit-task-status-select" class="form-label">Status</label>
+            <select id="edit-task-status-select" class="form-control">
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="btn-cancel-task-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: RESOLVE CLARIFICATION -->
+  <!-- ========================================================================= -->
+  <div class="modal-backdrop hidden" id="modal-resolve-clarification">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Resolve Ambiguity</h3>
+        <button class="btn-close" id="btn-close-clarification-modal">&times;</button>
+      </div>
+      <form id="form-resolve-clarification" class="modal-body">
+        <input type="hidden" id="resolve-clarification-id">
+        <input type="hidden" id="resolve-related-task-id">
+        <input type="hidden" id="resolve-meeting-id">
+
+        <div class="clarification-modal-banner">
+          <div class="text-xs text-muted mb-1">ORIGINAL STATEMENT</div>
+          <blockquote class="quote-text" id="modal-clarification-quote">"..."</blockquote>
+          <div class="text-xs text-muted mt-2 mb-1">AI QUESTION</div>
+          <p class="question-text text-purple" id="modal-clarification-question">?</p>
+        </div>
+
+        <div class="form-group">
+          <label for="resolve-assignee-input" class="form-label">Assignee / Owner</label>
+          <input type="text" id="resolve-assignee-input" class="form-control" placeholder="e.g., Sarah Chen">
+        </div>
+
+        <div class="form-group">
+          <label for="resolve-deadline-input" class="form-label">Deadline</label>
+          <input type="date" id="resolve-deadline-input" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="resolve-notes-input" class="form-label">Updated Details / Notes</label>
+          <input type="text" id="resolve-notes-input" class="form-control" placeholder="Additional scope clarifications or notes...">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="btn-cancel-clarification-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Resolve &amp; Update Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container for Notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Application Scripts -->
+  <script src="sampleData.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
